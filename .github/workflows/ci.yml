@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test-scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check bash syntax
+        run: |
+          bash -n check_api.sh
+          bash -n analyze_logs.sh
+
+      - name: Make executable
+        run: chmod +x check_api.sh analyze_logs.sh
+
+      - name: Test check_api.sh
+        run: |
+          for i in 1 2 3; do
+            ./check_api.sh https://httpbin.org/status/200 && break
+            if [ "$i" -eq 3 ]; then exit 1; fi
+            sleep 3
+          done
+
+      - name: Test analyze_logs.sh
+        run: ./analyze_logs.sh
+
+      - name: Validate docker compose file
+        run: docker compose config
