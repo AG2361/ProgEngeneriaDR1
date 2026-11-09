@@ -1,0 +1,7 @@
+*.log
+*.tmp
+*.swp
+.DS_Store
+build/
+dist/
+node_modules/
